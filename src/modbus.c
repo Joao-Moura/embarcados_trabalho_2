@@ -48,11 +48,48 @@ void envia_msg(int uart0_fd, unsigned char *buffer_envio, int tamanho_mensagem) 
             printf("UART TX error\n");
             return ;
         } else {
-            printf("Escrito na UART %i bytes.\n", count);
+            printf("Escrito na UART %i bytes: ", count);
             for (int i = 0; i < count; i++) {
                 printf("%02x", buffer_envio[i]);
             }
             printf("\n");
         }
     }
+}
+
+int crc_valido(unsigned char *buffer_escrita, int tamanho_buffer) {
+    short crc_calculado = calcula_CRC(buffer_escrita, tamanho_buffer - 2);
+    short crc_recebido;
+
+    memcpy(&crc_recebido, &buffer_escrita[7], 2);
+    if (crc_calculado != crc_recebido) {
+        printf("CRC recebido %hd falhou, esperado: %hd.\n", crc_recebido, crc_calculado);
+        return 1;
+    }
+
+    return 0;
+}
+
+int le_msg(int uart0_fd, unsigned char *buffer_escrita, void *dado) {
+    memset(buffer_escrita, 0x00, 300);
+    int tamanho_buffer = read(uart0_fd, (void*)buffer_escrita, 300);
+
+    if (tamanho_buffer < 0)
+        printf("Erro na leitura.\n");
+    else if (tamanho_buffer == 0)
+        printf("Nenhum dado disponível.\n");
+    else {
+        printf("Lido da UART %i bytes: ", tamanho_buffer);
+        for (int i = 0; i < tamanho_buffer; i++) {
+            printf("%02x", buffer_escrita[i]);
+        }
+        printf("\n");
+
+        if (crc_valido(buffer_escrita, tamanho_buffer))
+            return -1;
+
+        memcpy(dado, &buffer_escrita[3], tamanho_buffer);
+    }
+
+    return tamanho_buffer;
 }

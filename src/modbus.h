@@ -8,5 +8,6 @@ void monta_msg(unsigned char *buffer_envio,
                void *dado_envio);
 
 void envia_msg(int uart0_fd, unsigned char *buffer_envio, int tamanho_mensagem);
+int le_msg(int uart0_fd, unsigned char *buffer_escrita, void *dado);
 
 #endif /* MODBUS_H_ */

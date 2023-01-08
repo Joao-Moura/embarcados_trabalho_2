@@ -47,9 +47,7 @@ short calcula_CRC(unsigned char *commands, int size) {
 	int i;
 	short crc = 0;
 	for(i=0;i<size;i++) {
-                printf("%02x", commands[i]);
 		crc = CRC16(crc, commands[i]);
 	}
-        printf("\n");
 	return crc;
 }

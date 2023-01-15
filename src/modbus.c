@@ -54,6 +54,7 @@ void envia_msg(int uart0_fd, unsigned char *buffer_envio, int tamanho_mensagem) 
             }
             printf("\n");
         }
+        usleep(250000);
     }
 }
 
@@ -76,9 +77,11 @@ int le_msg(int uart0_fd, unsigned char *buffer_escrita, void *dado) {
 
     if (tamanho_buffer < 0)
         printf("Erro na leitura.\n");
-    else if (tamanho_buffer == 0)
+    else if (tamanho_buffer == 0) {
         printf("Nenhum dado disponível.\n");
-    else {
+        usleep(500000);
+        return le_msg(uart0_fd, buffer_escrita, dado);
+    } else {
         printf("Lido da UART %i bytes: ", tamanho_buffer);
         for (int i = 0; i < tamanho_buffer; i++) {
             printf("%02x", buffer_escrita[i]);

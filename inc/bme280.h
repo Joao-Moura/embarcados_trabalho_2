@@ -388,7 +388,7 @@ int8_t bme280_compensate_data(uint8_t sensor_comp,
  */
 uint32_t bme280_cal_meas_delay(const struct bme280_settings *settings);
 
-int initialize_sensor(char *i2c_path);
+void inicia_bme280(char *i2c_path);
 
 #ifdef __cplusplus
 }

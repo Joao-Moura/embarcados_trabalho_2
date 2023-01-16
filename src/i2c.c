@@ -131,7 +131,7 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev);
 /*!
  * @brief This function starts execution of the program.
  */
-int initialize_sensor(char *i2c_path)
+void inicia_bme280(char *i2c_path)
 {
     struct bme280_dev dev;
 
@@ -174,8 +174,6 @@ int initialize_sensor(char *i2c_path)
         fprintf(stderr, "Failed to stream sensor data (code %+d).\n", rslt);
         exit(1);
     }
-
-    return 0;
 }
 
 /*!

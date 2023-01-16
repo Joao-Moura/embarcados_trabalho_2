@@ -29,10 +29,9 @@ int inicia_uart() {
     return uart0_fd;
 }
 
-void finaliza_uart() {
+void reseta_uart() {
     int zero = 0;
     monta_msg(buffer_envio, &tamanho_mensagem, 0x16, 0xD3, (void *)&zero, 1);
     monta_msg(buffer_envio, &tamanho_mensagem, 0x16, 0xD4, (void *)&zero, 1);
     monta_msg(buffer_envio, &tamanho_mensagem, 0x16, 0xD5, (void *)&zero, 1);
-    close(uart0_fd);
 }

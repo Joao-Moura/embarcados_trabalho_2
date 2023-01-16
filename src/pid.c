@@ -6,8 +6,7 @@ double referencia = 0.0;
 double Kp = 0.0;  // Ganho Proporcional
 double Ki = 0.0;  // Ganho Integral
 double Kd = 0.0;  // Ganho Derivativo
-int T = 1.0;      // Período de Amostragem (ms)
-unsigned long last_time;
+double T = 0.75;      // Período de Amostragem (ms)
 double erro_total, erro_anterior = 0.0;
 int sinal_de_controle_MAX = 100.0;
 int sinal_de_controle_MIN = -100.0;

@@ -5,6 +5,10 @@
 #include "crc16.h"
 #include "vars.h"
 
+#define RETRY 3
+
+int retentativas = RETRY;
+
 void envia_msg(unsigned char *buffer_envio, int tamanho_mensagem) {
     if (uart0_fd != -1) {
         int count = write(uart0_fd, &buffer_envio[0], tamanho_mensagem);
@@ -80,12 +84,16 @@ int le_msg(int uart0_fd, unsigned char *buffer_escrita, void *dado) {
 
     if (tamanho_buffer < 0)
         printf("Erro na leitura.\n");
+    else if (!retentativas)
+        return -1;
     else if (tamanho_buffer == 0) {
         printf("Nenhum dado disponível.\n");
+        retentativas--;
         usleep(500000);
         return le_msg(uart0_fd, buffer_escrita, dado);
     } else {
         printf("Lido da UART %i bytes: ", tamanho_buffer);
+        retentativas = RETRY;
         for (int i = 0; i < tamanho_buffer; i++) {
             printf("%02x", buffer_escrita[i]);
         }

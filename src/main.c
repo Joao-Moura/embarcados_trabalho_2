@@ -9,21 +9,30 @@
 #include "bme280.h"
 #include "gpio.h"
 #include "vars.h"
+#include "pid.h"
 
 
 void finaliza_programa (int sinal) {
     printf("Finalizando programa ...\n");
     // HACK: como as funções da gpio são inversas, settando uma pra 0 a outra já vai estar em 0
     set_controle(0);
-    finaliza_uart();
+    reseta_uart();
+    close(uart0_fd);
     exit(0);
+}
+
+void init() {
+    pid_configura_constantes(30.0, 0.2, 400.0);
+    uart0_fd = inicia_uart();
+    inicia_gpio();
+    // inicia_bme280("/dev/i2c-20");
+    reseta_uart();
+    le_msg(uart0_fd, buffer_escrita, NULL);
 }
 
 int main (int argc, char *argv[]) {
     signal(SIGINT, finaliza_programa);
-    uart0_fd = inicia_uart();
-    inicia_gpio();
-    // inicia_bme280("/dev/i2c-20");
+    init();
     // set_controle(-100);
 
     while(1) {
@@ -50,12 +59,19 @@ int main (int argc, char *argv[]) {
                     monta_msg(buffer_envio, &tamanho_mensagem, 0x16, 0xD4, (void *)&estado_atual.modo_controle, 1);
                     le_msg(uart0_fd, buffer_escrita, (void *)&dado);
                 } else {
-                    usleep(250000);
-                }
+                    monta_msg(buffer_envio, &tamanho_mensagem, 0x23, 0xC1, NULL, 0);
+                    le_msg(uart0_fd, buffer_escrita, (void *)&estado_atual.temperatura_interna);
+                    monta_msg(buffer_envio, &tamanho_mensagem, 0x23, 0xC2, NULL, 0);
+                    le_msg(uart0_fd, buffer_escrita, (void *)&estado_atual.temperatura_referencia);
+                    printf("Temperaturas interna: %.2f e de referencia: %.2f\n", estado_atual.temperatura_interna, estado_atual.temperatura_referencia); 
 
-                /* float data;
-                memcpy(&data, &buffer_escrita[3], 4);
-                printf("%f\n", data); */
+                    if (estado_atual.em_funcionamento) {
+                        pid_atualiza_referencia(estado_atual.temperatura_referencia);
+                        int potencia = (int) pid_controle(estado_atual.temperatura_interna);
+                        printf("=============== NOVA POTENCIA = %d =========\n", potencia);
+                        set_controle(potencia);
+                    }
+                }
             } else {
                 usleep(250000);
             }

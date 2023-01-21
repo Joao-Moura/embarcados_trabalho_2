@@ -35,6 +35,7 @@
 /******************************************************************************/
 /*!                         Own header files                                  */
 #include "bme280.h"
+#include "vars.h"
 
 /******************************************************************************/
 /*!                               Structures                                  */
@@ -246,6 +247,7 @@ void print_sensor_data(struct bme280_data *comp_data)
 #endif
 #endif
     printf("%0.2lf deg C, %0.2lf hPa, %0.2lf%%\n", temp, press, hum);
+    estado_atual.temperatura_ambiente = temp;
 }
 
 /*!
@@ -288,28 +290,25 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev)
      *  and the oversampling configuration. */
     req_delay = bme280_cal_meas_delay(&dev->settings);
 
-    /* Continuously stream sensor data */
-    while (1)
+    /* Set the sensor to forced mode */
+    rslt = bme280_set_sensor_mode(BME280_FORCED_MODE, dev);
+    if (rslt != BME280_OK)
     {
-        /* Set the sensor to forced mode */
-        rslt = bme280_set_sensor_mode(BME280_FORCED_MODE, dev);
-        if (rslt != BME280_OK)
-        {
-            fprintf(stderr, "Failed to set sensor mode (code %+d).", rslt);
-            break;
-        }
-
-        /* Wait for the measurement to complete and print data */
-        dev->delay_us(req_delay, dev->intf_ptr);
-        rslt = bme280_get_sensor_data(BME280_ALL, &comp_data, dev);
-        if (rslt != BME280_OK)
-        {
-            fprintf(stderr, "Failed to get sensor data (code %+d).", rslt);
-            break;
-        }
-
-        print_sensor_data(&comp_data);
+        fprintf(stderr, "Failed to set sensor mode (code %+d).", rslt);
+        exit(1);
     }
+
+    /* Wait for the measurement to complete and print data */
+    dev->delay_us(req_delay, dev->intf_ptr);
+    rslt = bme280_get_sensor_data(BME280_ALL, &comp_data, dev);
+    if (rslt != BME280_OK)
+    {
+        fprintf(stderr, "Failed to get sensor data (code %+d).", rslt);
+        exit(1);
+    }
+
+    bme280 = comp_data;
+    print_sensor_data(&comp_data);
 
     return rslt;
 }

@@ -11,6 +11,6 @@ unsigned char buffer_envio[300], buffer_escrita[300];
 
 int estado_curva = 0;
 int delay_curva[10] = {60, 60, 120, 20, 40, 60, 60, 60, 120, 20};
-int temperatura_curva[10] = {25, 38, 46, 54, 57, 61, 63, 54, 33, 25};
+float temperatura_curva[10] = {25.0, 38.0, 46.0, 54.0, 57.0, 61.0, 63.0, 54.0, 33.0, 25.0};
 
 pthread_t tid_temp, tid_curva;

@@ -20,7 +20,7 @@ extern unsigned char buffer_envio[300], buffer_escrita[300];
 
 extern int estado_curva;
 extern int delay_curva[10];
-extern int temperatura_curva[10];
+extern float temperatura_curva[10];
 
 extern pthread_t tid_temp, tid_curva;
 

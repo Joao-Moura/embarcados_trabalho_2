@@ -49,7 +49,7 @@ int main (int argc, char *argv[]) {
 
             if (tamanho_buffer > 0) {
                 printf("Dado lido: %d\n", dado);
-                if ((dado == 161) | (dado == 162)) {
+                if ((dado == 161) || (dado == 162)) {
                     dado &= 0x1;
                     monta_msg(buffer_envio, &tamanho_mensagem, 0x16, 0xD3, (void *)&dado, 1);
                     le_msg(uart0_fd, buffer_escrita, (void *)&dado);
@@ -60,22 +60,25 @@ int main (int argc, char *argv[]) {
                         monta_msg(buffer_envio, &tamanho_mensagem, 0x16, 0xD5, (void *)&estado_atual.em_funcionamento, 1);
                         le_msg(uart0_fd, buffer_escrita, (void *)&dado);
                     }
-                } else if (((dado == 163) | (dado == 164)) & estado_atual.ligado) {
+                } else if (((dado == 163) || (dado == 164)) & estado_atual.ligado) {
                     dado &= 0x1;
                     monta_msg(buffer_envio, &tamanho_mensagem, 0x16, 0xD5, (void *)&dado, 1);
                     le_msg(uart0_fd, buffer_escrita, (void *)&dado);
                     estado_atual.em_funcionamento = dado;
-                } else if ((dado == 165) & estado_atual.ligado) {
+                } else if ((dado == 165) && estado_atual.ligado) {
                     estado_atual.modo_controle ^= 1;
+                    estado_curva = 0;
                     monta_msg(buffer_envio, &tamanho_mensagem, 0x16, 0xD4, (void *)&estado_atual.modo_controle, 1);
                     le_msg(uart0_fd, buffer_escrita, (void *)&dado);
                 } else {
                     monta_msg(buffer_envio, &tamanho_mensagem, 0x23, 0xC1, NULL, 0);
                     le_msg(uart0_fd, buffer_escrita, (void *)&estado_atual.temperatura_interna);
 
-                    if (!estado_atual.modo_controle) {
+                    if (!estado_atual.modo_controle || (!estado_atual.em_funcionamento && estado_atual.modo_controle)) {
                         monta_msg(buffer_envio, &tamanho_mensagem, 0x23, 0xC2, NULL, 0);
                         le_msg(uart0_fd, buffer_escrita, (void *)&estado_atual.temperatura_referencia);
+                    } else {
+                        estado_atual.temperatura_referencia = temp_curva;
                     }
 
                     printf("Temperaturas interna: %.2f e de referencia: %.2f\n", estado_atual.temperatura_interna, estado_atual.temperatura_referencia); 

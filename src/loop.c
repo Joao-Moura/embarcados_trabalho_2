@@ -51,12 +51,9 @@ void gerencia_temperaturas () {
         estado_atual.temperatura_referencia = temp_curva;
     }
 
-    printf("Temperaturas interna: %.2f e de referencia: %.2f\n", estado_atual.temperatura_interna, estado_atual.temperatura_referencia); 
-
     if (estado_atual.em_funcionamento) {
         pid_atualiza_referencia(estado_atual.temperatura_referencia);
         int potencia = (int) pid_controle(estado_atual.temperatura_interna);
-        printf("=============== NOVA POTENCIA = %d =========\n", potencia);
         set_controle(potencia);
     }
 }
@@ -70,7 +67,6 @@ void loop_principal () {
             int tamanho_buffer = le_msg(uart0_fd, buffer_escrita, (void *)&dado);
 
             if (tamanho_buffer > 0) {
-                printf("Dado lido: %d\n", dado);
                 if ((dado == 161) || (dado == 162))
                     gerencia_forno(dado);
                 else if (((dado == 163) || (dado == 164)) & estado_atual.ligado)

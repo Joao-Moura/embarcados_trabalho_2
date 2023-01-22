@@ -12,8 +12,8 @@
 $ mkdir -p bin
 $ make
 
-# Agora executo o binário que se encontra na pasta /bin
-$ ./bin/bin
+# Agora execute o binário que se encontra na pasta /bin
+$ ./bin/bin [nome do arquivo csv de logs]
 ```
 
 # Experimentos

@@ -15,12 +15,6 @@ void envia_msg(unsigned char *buffer_envio, int tamanho_mensagem) {
         if (count < 0) {
             printf("UART TX error\n");
             return ;
-        } else {
-            printf("Escrito na UART %i bytes: ", count);
-            for (int i = 0; i < count; i++) {
-                printf("%02x", buffer_envio[i]);
-            }
-            printf("\n");
         }
         usleep(250000);
     }
@@ -93,12 +87,6 @@ int le_msg(int uart0_fd, unsigned char *buffer_escrita, void *dado) {
         usleep(500000);
         return le_msg(uart0_fd, buffer_escrita, dado);
     } else {
-        printf("Lido da UART %i bytes: ", tamanho_buffer);
-        for (int i = 0; i < tamanho_buffer; i++) {
-            printf("%02x", buffer_escrita[i]);
-        }
-        printf("\n");
-
         if (crc_valido(buffer_escrita, tamanho_buffer))
             return -1;
 

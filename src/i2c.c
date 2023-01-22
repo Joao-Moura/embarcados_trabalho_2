@@ -229,24 +229,17 @@ int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void 
  */
 void print_sensor_data(struct bme280_data *comp_data)
 {
-    float temp, press, hum;
+    float temp;
 
 #ifdef BME280_FLOAT_ENABLE
     temp = comp_data->temperature;
-    press = 0.01 * comp_data->pressure;
-    hum = comp_data->humidity;
 #else
 #ifdef BME280_64BIT_ENABLE
     temp = 0.01f * comp_data->temperature;
-    press = 0.0001f * comp_data->pressure;
-    hum = 1.0f / 1024.0f * comp_data->humidity;
 #else
     temp = 0.01f * comp_data->temperature;
-    press = 0.01f * comp_data->pressure;
-    hum = 1.0f / 1024.0f * comp_data->humidity;
 #endif
 #endif
-    printf("%0.2lf deg C, %0.2lf hPa, %0.2lf%%\n", temp, press, hum);
     estado_atual.temperatura_ambiente = temp;
 }
 

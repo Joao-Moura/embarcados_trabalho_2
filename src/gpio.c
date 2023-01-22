@@ -22,12 +22,16 @@ void inicia_gpio () {
 void set_resistor (int potencia) {
     softPwmWrite(4, potencia);
     softPwmWrite(5, 0);
+    estado_atual.potencia_resistor = potencia;
+    estado_atual.potencia_ventoinha = 0;
 }
 
 void set_ventoinha (int potencia) {
     potencia = potencia < 40 ? 40 : potencia;
     softPwmWrite(5, potencia);
     softPwmWrite(4, 0);
+    estado_atual.potencia_resistor = 0;
+    estado_atual.potencia_ventoinha = potencia;
 }
 
 void set_controle(int potencia) {

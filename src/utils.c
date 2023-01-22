@@ -4,6 +4,7 @@
 #include "modbus.h"
 #include "bme280.h"
 #include "vars.h"
+#include "csv.h"
 
 float temp_curva = 0.0;
 
@@ -14,7 +15,6 @@ void *executa_curva (void *args) {
             continue;
         }
 
-        printf("--------------------------> EXECUTANDO CURVA: %d\n", estado_curva);
         int tempo_espera = delay_curva[estado_curva];
         temp_curva = temperatura_curva[estado_curva];
 
@@ -32,7 +32,7 @@ void *executa_curva (void *args) {
 
 void *executa_temperatura (void *args) {
     while (1) {
-        printf("-----> EXECUTANDO TEMPERATURA\n");
+        escreve_no_csv();
         print_sensor_data(&bme280);
         monta_msg(buffer_envio, &tamanho_mensagem, 0x16, 0xD6, (void *)&estado_atual.temperatura_ambiente, 4);
         sleep(1);

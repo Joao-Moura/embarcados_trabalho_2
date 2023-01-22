@@ -1,6 +1,7 @@
 #ifndef VARS_H_
 #define VARS_H_
 #include <pthread.h>
+#include <stdio.h>
 
 struct estado_sistema {
     int modo_controle;
@@ -9,11 +10,15 @@ struct estado_sistema {
     float temperatura_interna;
     float temperatura_referencia;
     float temperatura_ambiente;
+    int potencia_ventoinha;
+    int potencia_resistor;
 };
 extern struct estado_sistema estado_atual;
 
 extern int uart0_fd;
 extern struct bme280_data bme280;
+
+extern FILE *csv_fd;
 
 extern int tamanho_mensagem;
 extern unsigned char buffer_envio[300], buffer_escrita[300];
